@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System;
 
 public class PanZoomCamera : MonoBehaviour 
 {
@@ -8,6 +9,8 @@ public class PanZoomCamera : MonoBehaviour
 
     private bool isPaning = false;
 
+	private Camera thisCamera;
+
     private Vector3 startPanPos;
     private Vector3 cameraPreviousPos;
 
@@ -15,12 +18,14 @@ public class PanZoomCamera : MonoBehaviour
     private float horizontalExtent;
 
     private Vector3 velocity = Vector3.zero;
-
     private Vector3 target;
+
+	public event Action<Vector3> OnLeftClick; //(Vector3 worldPositionClicked);
 
 	void Start () 
 	{
-        verticalExtent = Camera.main.orthographicSize;
+		thisCamera = GetComponent<Camera> ();
+		verticalExtent = thisCamera.orthographicSize;
         horizontalExtent = verticalExtent * Screen.width / Screen.height;
         transform.position = new Vector3(horizontalExtent/2f, verticalExtent, -10f);
         target = transform.position;
@@ -28,14 +33,17 @@ public class PanZoomCamera : MonoBehaviour
 	
 	void Update ()
     {
+		if ((Input.GetMouseButtonDown(0) || Input.GetMouseButton (0)) && OnLeftClick != null)
+			OnLeftClick (thisCamera.ScreenToWorldPoint (Input.mousePosition));
+
         // Zoom
         if (Input.mouseScrollDelta.y != 0f)
         {
-            Camera.main.orthographicSize += zoomMultiplier * Input.mouseScrollDelta.y * -1f;
+			thisCamera.orthographicSize += zoomMultiplier * Input.mouseScrollDelta.y * -1f;
         }
 
         // Pan based on current zoom
-        verticalExtent = Camera.main.orthographicSize;
+		verticalExtent = thisCamera.orthographicSize;
         horizontalExtent = verticalExtent * Screen.width / Screen.height;
 
         if (isPaning == false && Input.GetMouseButtonDown(1))
