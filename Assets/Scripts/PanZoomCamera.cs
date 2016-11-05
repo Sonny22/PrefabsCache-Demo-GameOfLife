@@ -20,8 +20,6 @@ public class PanZoomCamera : MonoBehaviour
     private Vector3 velocity = Vector3.zero;
     private Vector3 target;
 
-	public event Action<Vector3> OnLeftClick; //(Vector3 worldPositionClicked);
-
 	void Start () 
 	{
 		thisCamera = GetComponent<Camera> ();
@@ -33,9 +31,6 @@ public class PanZoomCamera : MonoBehaviour
 	
 	void Update ()
     {
-		if ((Input.GetMouseButtonDown(0) || Input.GetMouseButton (0)) && OnLeftClick != null)
-			OnLeftClick (thisCamera.ScreenToWorldPoint (Input.mousePosition));
-
         // Zoom
         if (Input.mouseScrollDelta.y != 0f)
         {

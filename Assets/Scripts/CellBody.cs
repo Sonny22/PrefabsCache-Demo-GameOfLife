@@ -9,20 +9,22 @@ public class Cell : IEquatable<Cell>
 	public class Coords : IEquatable<Coords>
 	{
 		public int x;
-        private string str;
 		public int y;
 
 		public Coords(int x, int y)
 		{
 			this.x = x;
 			this.y = y;
-
-            str = String.Join(",", new string[] {x.ToString(), y.ToString()});
 		}
 
 		public override int GetHashCode ()
 		{
-			return str.GetHashCode();
+            int hash = 23;
+
+            hash = hash * 29 + x.GetHashCode();
+            hash = hash * 29 + y.GetHashCode();
+
+			return hash;
 		}
 
 		public override bool Equals (object obj)
@@ -71,6 +73,11 @@ public class Cell : IEquatable<Cell>
     public bool IsDying
     {
         get { return state == State.Dying; }
+    }
+
+    public bool IsDead 
+    {
+        get { return state == State.Dead || state == State.NewBorn; }
     }
 
 	public Cell(Coords coords)

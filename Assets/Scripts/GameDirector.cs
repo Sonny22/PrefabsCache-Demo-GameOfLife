@@ -12,27 +12,21 @@ public class GameDirector : MonoBehaviour
 
 	private Hashtable cells = new Hashtable(100);
 
-	private PanZoomCamera cam;
+    private Camera cam;
 
 	void Awake()
 	{
-		cam = Camera.main.GetComponent<PanZoomCamera> ();
-		cam.OnLeftClick += ManualAddCell;
+		cam = Camera.main;
 
         cells.Clear();
 
 		StartCoroutine(Generation());
 	}
-
-	void OnDestroy()
-	{
-		cam.OnLeftClick -= ManualAddCell;
-	}
-		
+        	
 	IEnumerator Generation()
 	{
-		while (true) {
-
+		while (true) 
+        {
 			foreach(Cell cell in cells.Values)
 			{
                 if (cell.IsAlive == false && cell.neighbours == 3) // New born
@@ -116,11 +110,19 @@ public class GameDirector : MonoBehaviour
 		}
 	}
 
-	public void ManualAddCell(Vector3 worldPos)
+    void Update()
 	{
-        Cell.Coords c = new Cell.Coords(Mathf.RoundToInt(worldPos.x - 0.5f), Mathf.RoundToInt(worldPos.y - 0.5f));
+        if (Input.GetMouseButtonDown(0) || Input.GetMouseButton (0))
+        {
+            Vector3 worldPos = cam.ScreenToWorldPoint(Input.mousePosition);
 
-        AddOrGetAt(c).SetNewBorn();
+            Cell.Coords c = new Cell.Coords(Mathf.RoundToInt(worldPos.x - 0.5f), Mathf.RoundToInt(worldPos.y - 0.5f));
+
+            if (cells.ContainsKey(c) && (cells[c] as Cell).IsDead == false)
+                return;
+            
+            AddOrGetAt(c).SetNewBorn();
+        }
 	}
 
     private Cell AddOrGetAt(Cell.Coords c)
